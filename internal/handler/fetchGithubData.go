@@ -6,14 +6,15 @@ import (
 	"net/http"
 	"time"
 
-	"NewJhez01/github-tracker/src/internal/domain/query"
-	"NewJhez01/github-tracker/src/internal/services"
+	"NewJhez01/github-tracker/internal/domain/query"
+	"NewJhez01/github-tracker/internal/services"
 )
 
 func main() {
 	ch := make(chan string)
 	go query.FetchFile(ch)
 	for v := range ch {
+		fmt.Println(v)
 		req, err := http.NewRequest("GET", "https://api.github.com/repos/"+v+"/commits?since=2026-05-07", nil)
 		if err != nil {
 			fmt.Println("fail")
@@ -28,6 +29,7 @@ func main() {
 			fmt.Println("failed to get response")
 		}
 		body, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
 		services.ParseRequest(body)
 	}
 }
