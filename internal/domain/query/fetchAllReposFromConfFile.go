@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"NewJhez01/github-tracker/src/internal/services"
+	"NewJhez01/github-tracker/internal/services"
 )
 
 func FetchFile(repos chan string) {
