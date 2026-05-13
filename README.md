@@ -20,7 +20,8 @@ For more info on the functionality view the Architecture Diagramm below.
 
 ## Architecture
 
-`┌─────────────────────────────────────────┐
+`
+┌─────────────────────────────────────────┐
 │              Cron Trigger               │
 │         (systemd timer / scheduler)     │
 └─────────────────┬───────────────────────┘
