@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -11,8 +10,6 @@ func ParseRepos(chunk []byte, repos chan string) string {
 	}
 	rest := ""
 	parts := strings.Split(string(chunk), "\n")
-	fmt.Println("parts: ")
-	fmt.Println(parts)
 	if !strings.Contains((string(chunk[len(chunk)-1])), "\n") {
 		rest = parts[len(parts)-1]
 		parts = parts[:len(parts)-1]

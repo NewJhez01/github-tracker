@@ -8,6 +8,8 @@ import (
 func ParseRequest(b []byte) {
 	s := strings.Split(string(b), ",")
 	for _, v := range s {
-		fmt.Println(v)
+		if strings.Contains(v, "message") || strings.Contains(v, "url") {
+			fmt.Println(v)
+		}
 	}
 }
