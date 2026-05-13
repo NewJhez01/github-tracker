@@ -29,6 +29,7 @@ func main() {
 			fmt.Println("failed to get response")
 		}
 		body, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
 		services.ParseRequest(body)
 	}
 }
