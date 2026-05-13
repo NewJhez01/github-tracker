@@ -1,26 +1,31 @@
-# Github Tracker
+# GitHub Tracker
 
-This git hub tracker will auto fetch all public activity by a given user. Generate an Email report and
-asynchronously send it to the given person
+Fetches public activity across configured repositories and delivers a weekly email digest.
 
-## Description
+## What it does
 
-This project is used to implement various backend strategies for me to improve and create a cool project at the same time.
-Concepts used in this project are:
--Concurrent Http handline
--Concurrent Streaming of File
--Caching in Memory with Redis
--Async Message Handling
--Cron Job scheduling
+- Polls repository commits via GitHub API
+- Generates a summary report
+- Queues and sends it asynchronously via SMTP
 
-## Getting Started
+## Concepts
 
-clone the project and then run the script setup.sh which will ask you for all the repos and write it into a toml file.
-For more info on the functionality view the Architecture Diagramm below.
+- Concurrent HTTP workers
+- File streaming (repo list from TOML)
+- Redis caching
+- Message queue + async consumers
+- Cron scheduling
 
-## Architecture
+## Setup
 
-`
+```bash
+git clone git@github.com:NewJhez01/github-tracker.git
+./setup.sh  # writes repo list to config.toml
+```
+
+## Architecture Diagram
+
+```
 ┌─────────────────────────────────────────┐
 │              Cron Trigger               │
 │         (systemd timer / scheduler)     │
@@ -36,8 +41,8 @@ For more info on the functionality view the Architecture Diagramm below.
 │  └────┬────┘  └────┬────┘  └────┬────┘  │
 │       │            │            │       │
 │       ▼            ▼            ▼       │
-│    [TOML]      [GitHub      [Cache]     │
-│    (Repo File)  API]        (Report)    │
+│    [TOML]     [GitHub API]  [Cache]     │
+│    (Repo File)              (Report)    │
 │                              │          │
 │                              ▼          │
 │                         [Queue]         │
@@ -48,8 +53,5 @@ For more info on the functionality view the Architecture Diagramm below.
 │  │    Read Cache → Format Email     │   │
 │  │         → Send via SMTP          │   │
 │  └──────────────────────────────────┘   │
-└─────────────────────────────────────────┘`
-
-```
-
+└─────────────────────────────────────────┘
 ```
