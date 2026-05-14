@@ -40,16 +40,12 @@ This project follows CQRS (Command Query Responsibility Segregation) with a hexa
 │  ┌─────────────────┐  ┌─────────────────────────────────┐   │
 │  │  FetchHandler   │  │      MessageConsumerHandler     │   │
 │  │                 │  │                                 │   │
-│  │  Load repos ──→ │  │  ←── Read from queue            │   │
+│  │  Load repos     │  │  Read from queue                │   │
 │  │  Fetch commits  │  │  Format report                  │   │
 │  │  Generate report│  │  Send via SMTP                  │   │
 │  │  Cache + Queue  │  │                                 │   │
-│  └────────┬────────┘  └─────────────────────────────────┘   │
-│           │                                                 │
-│           │         ┌───────────────────┐                   │
-│           └────────→│   ReportCreated   │←──────────────────┘
-│                     │    (Domain Event) │                   │
-│                     └───────────────────┘                   │
+│  └─────────────────┘  └─────────────────────────────────┘   │
+│                                                             │
 └─────────────────────────────┬───────────────────────────────┘
                               │
                               ▼
