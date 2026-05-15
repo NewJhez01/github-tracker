@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"NewJhez01/github-tracker/internal/services"
 )
 
-func main() {
+func FetchGithubData() {
 	ch := make(chan string)
 	go query.FetchFile(ch)
 	for v := range ch {
