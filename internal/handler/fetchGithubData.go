@@ -8,6 +8,7 @@ import (
 
 	"NewJhez01/github-tracker/internal/domain/command"
 	"NewJhez01/github-tracker/internal/domain/query"
+	"NewJhez01/github-tracker/internal/repo"
 )
 
 func FetchGithubData() {
