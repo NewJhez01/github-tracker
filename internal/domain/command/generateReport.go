@@ -18,7 +18,7 @@ func GenreateReport(b []byte) {
 	// 2 create the markdown
 	m := formatter.Markdown{}
 	m.CreateReportLines(lines)
-	s := m.CreateMarkdown()
+	s := m.CreateReport()
 	fmt.Println(s)
 	// 3 call repository func to cache the markdown
 	// 4 dispatch the message for the message handler to async handle it
