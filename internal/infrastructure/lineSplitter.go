@@ -1,10 +1,8 @@
-package services
+package infrastructure
 
-import (
-	"strings"
-)
+import "strings"
 
-func ParseRepos(chunk []byte, repos chan string) string {
+func SplitLines(chunk []byte, ch chan string) string {
 	if !strings.Contains(string(chunk), "\n") {
 		return string(chunk)
 	}
@@ -18,7 +16,7 @@ func ParseRepos(chunk []byte, repos chan string) string {
 		if v == "" {
 			continue
 		}
-		repos <- v
+		ch <- v
 	}
 	return rest
 }

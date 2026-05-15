@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"fmt"
@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"NewJhez01/github-tracker/internal/domain/command"
 	"NewJhez01/github-tracker/internal/domain/query"
-	"NewJhez01/github-tracker/internal/services"
+	"NewJhez01/github-tracker/internal/repo"
 )
 
-func main() {
+func FetchGithubData() {
 	ch := make(chan string)
 	go query.FetchFile(ch)
 	for v := range ch {
@@ -30,6 +31,6 @@ func main() {
 		}
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		services.ParseRequest(body)
+		command.GenreateReport(body)
 	}
 }

@@ -3,34 +3,38 @@ package query
 import (
 	"fmt"
 	"io"
-	"os"
 
-	"NewJhez01/github-tracker/internal/services"
+	"NewJhez01/github-tracker/internal/infrastructure"
 )
 
+const REPO_FILE_PATH = "conf/repos.toml"
+
 func FetchFile(repos chan string) {
-	f, err := os.Open("conf/repos.toml")
+	f, err := infrastructure.ReadFile(REPO_FILE_PATH)
 	if err != nil {
 		fmt.Println(err.Error())
+		return
 	}
 	defer f.Close()
 	b := make([]byte, 8)
 	chunk := ""
 	for {
 		n, err := f.Read(b)
-		if err != nil && err != io.EOF {
-			fmt.Println(err.Error())
-		}
 		if n != 0 {
 			data := append([]byte(chunk), b[:n]...)
-			chunk = services.ParseRepos(data, repos)
+			chunk = infrastructure.SplitLines(data, repos)
 		}
 		if err == io.EOF {
 			if chunk != "" {
-				repos <- string(chunk)
+				repos <- chunk
 			}
 			close(repos)
-			break
+			return
+		}
+		if err != nil {
+			fmt.Println(err.Error())
+			close(repos)
+			return
 		}
 	}
 }
