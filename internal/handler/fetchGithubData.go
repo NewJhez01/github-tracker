@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"NewJhez01/github-tracker/internal/domain/command"
 	"NewJhez01/github-tracker/internal/domain/query"
-	"NewJhez01/github-tracker/internal/services"
 )
 
 func FetchGithubData() {
@@ -30,6 +30,6 @@ func FetchGithubData() {
 		}
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		services.ParseRequest(body)
+		command.GenreateReport(body)
 	}
 }
