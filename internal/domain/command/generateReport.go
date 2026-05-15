@@ -4,17 +4,11 @@ import (
 	"fmt"
 
 	"NewJhez01/github-tracker/internal/domain/formatter"
-	"NewJhez01/github-tracker/internal/infrastructure"
 )
 
 func GenreateReport(b []byte) {
 	// 1 parse the request body
-	ch := make(chan string)
 	lines := []string{}
-	go infrastructure.SplitLines(b, ch)
-	for v := range ch {
-		lines = append(lines, v)
-	}
 	// 2 create the markdown
 	m := formatter.Markdown{}
 	m.CreateReportLines(lines)
