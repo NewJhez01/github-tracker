@@ -27,6 +27,9 @@ func FetchGithubData() {
 			fmt.Println("failed to get response")
 		}
 
+		if resp.StatusCode != 200 {
+			continue
+		}
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
 		command.GenreateReport(body, v)

@@ -53,7 +53,9 @@ func lineSplitter(b []byte, ch chan string) string {
 	}
 
 	for _, v := range iterator {
-		ch <- v
+		if v != "" {
+			ch <- v
+		}
 	}
 	return rest
 }
