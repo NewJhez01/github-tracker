@@ -12,8 +12,9 @@ import (
 
 func FetchGithubData() {
 	ch := query.FetchRepos()
+	yesterday := time.Now().Add(-24 * time.Hour).Format("2006-01-02")
 	for v := range ch {
-		req, err := http.NewRequest("GET", fmt.Sprintf("https://api.github.com/repos/%s/commits?since=2026-05-07", v), nil)
+		req, err := http.NewRequest("GET", fmt.Sprintf("https://api.github.com/repos/%s/commits?since=%s", v, yesterday), nil)
 		if err != nil {
 			fmt.Println("fail")
 		}
