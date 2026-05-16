@@ -7,7 +7,6 @@ func (m *Markdown) CreateReportLines(l []string) {
 		m.Activities = append(m.Activities, Activity{
 			Event:   v,
 			Message: &v,
-			Repo:    v,
 			Date:    time.Now(),
 		},
 		)

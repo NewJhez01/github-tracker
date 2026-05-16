@@ -29,6 +29,6 @@ func FetchGithubData() {
 
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		command.GenreateReport(body)
+		command.GenreateReport(body, v)
 	}
 }

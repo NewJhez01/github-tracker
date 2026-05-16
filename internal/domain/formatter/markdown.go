@@ -9,6 +9,5 @@ type Markdown struct {
 type Activity struct {
 	Event   string
 	Message *string
-	Repo    string
 	Date    time.Time
 }

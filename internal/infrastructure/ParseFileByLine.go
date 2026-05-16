@@ -43,7 +43,6 @@ func lineSplitter(b []byte, ch chan string) string {
 	}
 	endsWithNewLine := strings.HasSuffix(string(b), "\n")
 	parts := strings.Split(string(b), "\n")
-	fmt.Println(parts)
 	iterator := parts
 
 	rest := ""
@@ -54,7 +53,6 @@ func lineSplitter(b []byte, ch chan string) string {
 	}
 
 	for _, v := range iterator {
-		fmt.Println(v)
 		ch <- v
 	}
 	return rest
