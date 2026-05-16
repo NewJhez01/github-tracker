@@ -11,13 +11,15 @@ func ParseFileByLine(f *os.File) chan string {
 	ch := make(chan string)
 	b := make([]byte, 8)
 	chunk := ""
+	i := 0
 	go func() {
 		defer close(ch)
 		for {
 			n, err := f.Read(b)
 			if n != 0 {
+				i++
 				data := append([]byte(chunk), b[:n]...)
-				lineSplitter(data, ch)
+				chunk = lineSplitter(data, ch)
 			}
 			if err == io.EOF {
 				if chunk != "" {
@@ -36,14 +38,15 @@ func ParseFileByLine(f *os.File) chan string {
 }
 
 func lineSplitter(b []byte, ch chan string) string {
-	rest := ""
 	if !strings.Contains(string(b), "\n") {
-		return rest
+		return string(b)
 	}
 	endsWithNewLine := strings.HasSuffix(string(b), "\n")
 	parts := strings.Split(string(b), "\n")
+	fmt.Println(parts)
 	iterator := parts
 
+	rest := ""
 	if !endsWithNewLine {
 		lastidx := len(parts) - 1
 		iterator = parts[:lastidx]
@@ -51,6 +54,7 @@ func lineSplitter(b []byte, ch chan string) string {
 	}
 
 	for _, v := range iterator {
+		fmt.Println(v)
 		ch <- v
 	}
 	return rest

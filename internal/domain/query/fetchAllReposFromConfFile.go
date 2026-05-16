@@ -9,11 +9,11 @@ import (
 
 const REPO_FILE_PATH = "conf/repos.toml"
 
-func FetchFile() chan string {
+func FetchRepos() chan string {
 	f, err := os.Open(REPO_FILE_PATH)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil
 	}
-	return infrastructure.SplitLines(f)
+	return infrastructure.ParseFileByLine(f)
 }

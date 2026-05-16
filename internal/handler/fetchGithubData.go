@@ -11,7 +11,7 @@ import (
 )
 
 func FetchGithubData() {
-	ch := query.FetchFile()
+	ch := query.FetchRepos()
 	for v := range ch {
 		req, err := http.NewRequest("GET", fmt.Sprintf("https://api.github.com/repos/%s/commits?since=2026-05-07", v), nil)
 		if err != nil {

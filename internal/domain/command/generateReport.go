@@ -2,13 +2,14 @@ package command
 
 import (
 	"fmt"
+	"strings"
 
 	"NewJhez01/github-tracker/internal/domain/formatter"
 )
 
 func GenreateReport(b []byte) {
 	// 1 parse the request body
-	lines := []string{}
+	lines := strings.Split(string(b), "\n")
 	// 2 create the markdown
 	m := formatter.Markdown{}
 	m.CreateReportLines(lines)
