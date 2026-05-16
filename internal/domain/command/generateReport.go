@@ -7,19 +7,13 @@ import (
 	"NewJhez01/github-tracker/internal/infrastructure"
 )
 
-func GenreateReport(b []byte) {
-	// 1 parse the request body
-	ch := make(chan string)
-	lines := []string{}
-	go infrastructure.SplitLines(b, ch)
-	for v := range ch {
-		lines = append(lines, v)
+func GenreateReport(b []byte, s string) {
+	c, err := infrastructure.ParseJson(b)
+	if err != nil {
+		fmt.Println("parser func failed")
 	}
-	// 2 create the markdown
-	m := formatter.Markdown{}
-	m.CreateReportLines(lines)
-	s := m.CreateReport()
-	fmt.Println(s)
+	r := formatter.CreateReport(c, s)
+	fmt.Println(r)
 	// 3 call repository func to cache the markdown
 	// 4 dispatch the message for the message handler to async handle it
 }
