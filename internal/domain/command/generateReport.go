@@ -8,12 +8,10 @@ import (
 )
 
 func GenreateReport(b []byte, s string) {
-	// 1 parse the request body
 	c, err := infrastructure.ParseJson(b)
 	if err != nil {
 		fmt.Println("parser func failed")
 	}
-	// 2 create the markdown
 	r := formatter.CreateReport(c, s)
 	fmt.Println(r)
 	// 3 call repository func to cache the markdown

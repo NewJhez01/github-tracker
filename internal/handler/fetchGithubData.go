@@ -28,6 +28,7 @@ func FetchGithubData() {
 		}
 
 		if resp.StatusCode != 200 {
+			fmt.Println("statuscode: ", resp.StatusCode)
 			continue
 		}
 		body, _ := io.ReadAll(resp.Body)
