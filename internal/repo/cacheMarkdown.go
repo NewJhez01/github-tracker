@@ -7,25 +7,30 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func Get() {
-	rdb := redis.NewClient(&redis.Options{
+func getRedisConn() *redis.Client {
+	return redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password
 		DB:       0,  // use default DB
 		Protocol: 2,
 	})
-
-	ctx := context.Background()
-	err := rdb.Set(ctx, "foo", "bar", 0).Err()
-	if err != nil {
-		panic(err)
-	}
-
-	val, err := rdb.Get(ctx, "foo").Result()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("foo", val) // >>> foo bar
 }
 
-func Set() {}
+func Set(ctx context.Context, report, key string) {
+	rdb := getRedisConn()
+	err := rdb.Set(ctx, key, report, 0).Err()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func Get(ctx context.Context, key string) {
+	rdb := getRedisConn()
+	val, err := rdb.Get(ctx, key).Result()
+	if err != nil {
+		fmt.Println(err.Error())
+		panic(err)
+	}
+
+	fmt.Println(val)
+}
