@@ -7,7 +7,7 @@ import (
 	"NewJhez01/github-tracker/internal/infrastructure"
 )
 
-func GenreateReport(b []byte, s string) {
+func GenerateReport(b []byte, s string) {
 	c, err := infrastructure.ParseJson(b)
 	if err != nil {
 		fmt.Println("parser func failed")
