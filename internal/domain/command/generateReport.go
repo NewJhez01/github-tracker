@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"NewJhez01/github-tracker/internal/domain/formatter"
-	"NewJhez01/github-tracker/internal/infrastructure"
+	"NewJhez01/github-tracker/internal/infrastructure/parser"
+	"NewJhez01/github-tracker/internal/infrastructure/rabbitmq"
 	"NewJhez01/github-tracker/internal/repo"
 )
 
@@ -14,7 +15,7 @@ func GenerateReport(b []byte, s string, since time.Time) {
 	if string(b) == "[]" {
 		fmt.Println("No data for day")
 	}
-	c, err := infrastructure.ParseJson(b)
+	c, err := parser.ParseJson(b)
 	if err != nil {
 		fmt.Println("parser func failed")
 	}
@@ -26,4 +27,5 @@ func GenerateReport(b []byte, s string, since time.Time) {
 	repo.Set(ctx, s, yesterday)
 	repo.Get(ctx, yesterday)
 	// 4 dispatch the message for the message handler to async handle it
+	rabbitmq.Send()
 }

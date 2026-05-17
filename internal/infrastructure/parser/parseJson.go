@@ -1,4 +1,4 @@
-package infrastructure
+package parser
 
 import (
 	"encoding/json"
