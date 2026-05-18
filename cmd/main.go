@@ -1,9 +1,12 @@
 package main
 
 import (
-	"NewJhez01/github-tracker/internal/handler"
+	"NewJhez01/github-tracker/internal/handler/http"
+	"NewJhez01/github-tracker/internal/handler/message"
 )
 
 func main() {
-	handler.FetchGithubData()
+	go message.Send()
+	http.FetchGithubData()
+	select {}
 }
