@@ -27,5 +27,5 @@ func GenerateReport(b []byte, s string, since time.Time) {
 	repo.Set(ctx, s, yesterday)
 	repo.Get(ctx, yesterday)
 	// 4 dispatch the message for the message handler to async handle it
-	rabbitmq.Send()
+	rabbitmq.Send(yesterday)
 }

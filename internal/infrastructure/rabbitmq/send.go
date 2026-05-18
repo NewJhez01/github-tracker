@@ -8,10 +8,10 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 )
 
-func Send() {
+func Send(key string) {
 	conn, err := amqp091.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
-		fmt.Println("connection  failed")
+		fmt.Println("connection  failed", err)
 	}
 	ch, err := conn.Channel()
 	if err != nil {
@@ -21,11 +21,11 @@ func Send() {
 	defer conn.Close()
 
 	q, err := ch.QueueDeclare(
-		"hello", // name
-		true,    // durability
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
+		"send_email", // name
+		true,         // durability
+		false,        // delete when unused
+		false,        // exclusive
+		false,        // no-wait
 		amqp091.Table{
 			amqp091.QueueTypeArg: amqp091.QueueTypeQuorum,
 		},
@@ -37,7 +37,7 @@ func Send() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	body := "Hello World!"
+	fmt.Println("sent message")
 	err = ch.PublishWithContext(ctx,
 		"",     // exchange
 		q.Name, // routing key
@@ -45,7 +45,7 @@ func Send() {
 		false,  // immediate
 		amqp091.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(body),
+			Body:        []byte(key),
 		})
 	if err != nil {
 		fmt.Println("failed to pub queue")

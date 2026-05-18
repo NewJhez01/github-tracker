@@ -3,6 +3,8 @@ package message
 import (
 	"fmt"
 
+	"NewJhez01/github-tracker/internal/domain/command"
+
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -18,19 +20,28 @@ func send() {
 	}
 
 	defer ch.Close()
-
 	q, err := ch.QueueDeclare(
-		"hello", // name
-		true,    // durability
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
+		"send_email", // name
+		true,         // durability
+		false,        // delete when unused
+		false,        // exclusive
+		false,        // no-wait
 		amqp091.Table{
 			amqp091.QueueTypeArg: amqp091.QueueTypeQuorum,
 		},
 	)
+
+	msg, err := ch.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	)
 	if err != nil {
-		fmt.Println("failed to read queue")
+		fmt.Println("failed to fetch messages")
 	}
-	fmt.Println(q)
+	command.SendReport(msg)
 }
