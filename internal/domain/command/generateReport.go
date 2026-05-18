@@ -20,12 +20,10 @@ func GenerateReport(b []byte, s string, since time.Time) {
 		fmt.Println("parser func failed")
 	}
 	r := formatter.CreateReport(c, s)
-	fmt.Println(r)
 	// 3 call repository func to cache the markdown
 	ctx := context.Background()
 	yesterday := since.Format("2006-01-02")
-	repo.Set(ctx, s, yesterday)
-	repo.Get(ctx, yesterday)
+	repo.Set(ctx, r, yesterday)
 	// 4 dispatch the message for the message handler to async handle it
 	rabbitmq.Send(yesterday)
 }

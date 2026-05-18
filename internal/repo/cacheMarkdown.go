@@ -24,7 +24,7 @@ func Set(ctx context.Context, report, key string) {
 	}
 }
 
-func Get(ctx context.Context, key string) {
+func Get(ctx context.Context, key string) string {
 	rdb := getRedisConn()
 	val, err := rdb.Get(ctx, key).Result()
 	if err != nil {
@@ -32,5 +32,5 @@ func Get(ctx context.Context, key string) {
 		panic(err)
 	}
 
-	fmt.Println(val)
+	return val
 }

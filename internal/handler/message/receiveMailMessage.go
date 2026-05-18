@@ -8,7 +8,8 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 )
 
-func send() {
+func Send() {
+	fmt.Println("message handler")
 	conn, err := amqp091.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
 		fmt.Println("failed to connect to rabbit mq")
@@ -38,10 +39,14 @@ func send() {
 		false,  // exclusive
 		false,  // no-local
 		false,  // no-wait
-		nil,    // args
+		amqp091.Table{
+			amqp091.QueueTypeArg: amqp091.QueueTypeQuorum,
+		},
 	)
 	if err != nil {
 		fmt.Println("failed to fetch messages")
 	}
-	command.SendReport(msg)
+	for m := range msg {
+		command.SendReport(m.Body)
+	}
 }

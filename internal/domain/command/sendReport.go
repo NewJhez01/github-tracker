@@ -1,16 +1,13 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/rabbitmq/amqp091-go"
+	"NewJhez01/github-tracker/internal/repo"
 )
 
-func SendReport(ch <-chan amqp091.Delivery) {
-	go func() {
-		for v := range ch {
-			fmt.Println("consumed message")
-			fmt.Println(v)
-		}
-	}()
+func SendReport(b []byte) {
+	ctx := context.Background()
+	fmt.Println(repo.Get(ctx, string(b)))
 }
