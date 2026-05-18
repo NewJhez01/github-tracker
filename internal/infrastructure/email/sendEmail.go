@@ -10,20 +10,20 @@ type SmtpClient struct {
 	auth smtp.Auth
 }
 
-func CreateSmtpClient(addr string) *SmtpClient {
+func CreateSmtpClient(addr, host, passwd string) *SmtpClient {
 	return &SmtpClient{
 		addr: addr,
-		// to do handle secrets
-		auth: smtp.PlainAuth("", addr, "************", "smtp.gmail.com"),
+		auth: smtp.PlainAuth("", addr, passwd, host),
 	}
 }
 
-func (c *SmtpClient) Send(headline, body string) {
+func (c *SmtpClient) Send(smtpAddr, headline, body string) {
 	msg := "From: " + c.addr + "\n" +
 		"To: " + c.addr + "\n" +
 		"Subject: " + headline + "\n\n" +
 		body
-	err := smtp.SendMail("smtp.gmail.com:587", c.auth, c.addr, []string{c.addr}, []byte(msg))
+	fmt.Println("addr", smtpAddr)
+	err := smtp.SendMail(smtpAddr, c.auth, c.addr, []string{c.addr}, []byte(msg))
 	if err != nil {
 		fmt.Println("failed to send mail", err)
 	}
