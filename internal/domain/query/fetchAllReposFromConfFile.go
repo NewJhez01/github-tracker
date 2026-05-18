@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"NewJhez01/github-tracker/internal/infrastructure"
+	"NewJhez01/github-tracker/internal/infrastructure/parser"
 )
 
 const REPO_FILE_PATH = "conf/repos.toml"
@@ -15,5 +15,5 @@ func FetchRepos() chan string {
 		fmt.Println(err.Error())
 		return nil
 	}
-	return infrastructure.ParseFileByLine(f)
+	return parser.ParseFileByLine(f)
 }

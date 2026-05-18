@@ -1,9 +1,9 @@
 package main
 
 import (
-	"NewJhez01/github-tracker/internal/handler"
+	"NewJhez01/github-tracker/internal/handler/http"
 )
 
 func main() {
-	handler.FetchGithubData()
+	http.FetchGithubData()
 }

@@ -32,6 +32,5 @@ func send() {
 	if err != nil {
 		fmt.Println("failed to read queue")
 	}
-
 	fmt.Println(q)
 }
