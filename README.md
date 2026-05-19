@@ -30,15 +30,15 @@ cmd/main.go # wires dependencies, starts handlers
 ```
 
 Internal/
-domain/
-interfaces.go -> JsonParser, RabbitMq, CacheRepo, Smtp, FileParser
-command/
-GenerateReport,
-SendReport,
-query/
-FetchAllReposFromConfFile
-formatter/
-Domain Logic Formatting Utils
+    domain/
+        interfaces.go -> JsonParser, RabbitMq, CacheRepo, Smtp, FileParser
+        command/
+            GenerateReport,
+            SendReport,
+        query/
+            FetchAllReposFromConfFile
+        formatter/
+            Domain Logic Formatting Utils
 
     handler/
         http/
@@ -68,14 +68,12 @@ git clone git@github.com:NewJhez01/github-tracker.git
 cd github-tracker
 cp .env.example .env          # fill in SMTP and connection details
 
+edit the repos you want to track into repo.toml
+
 docker compose up -d  # consumer starts up here
 docker compose run --rm app /docker-tracker # publisher must be custom called by user or systemD
+```
 
 Remaining work
 
-See open issues. Tests and cron scheduling are the main outstanding items.
-```
-
-```
-
-```
+See open issues. Testing is main outstanding item.
