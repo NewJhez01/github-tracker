@@ -46,6 +46,7 @@ func (r *WorkQueue) Publish(qb *formatter.QueueBody, ctx context.Context) {
 }
 
 func (r *WorkQueue) Consume() <-chan amqp091.Delivery {
+	fmt.Println("received message")
 	msg, err := r.ch.Consume(
 		r.queue.Name,
 		"",
