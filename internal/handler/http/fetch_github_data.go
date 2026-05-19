@@ -40,6 +40,9 @@ func FetchGithubData(
 		}
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		command.GenerateReport(p, rabbitMq, body, v, since, cr, v)
+		err = command.GenerateReport(p, rabbitMq, body, v, since, cr, v)
+		if err != nil {
+			continue
+		}
 	}
 }

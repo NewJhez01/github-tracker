@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -16,10 +17,9 @@ func GenerateReport(
 	since time.Time,
 	cr domain.CacheRepo,
 	repo string,
-) {
+) error {
 	if string(b) == "[]" {
-		fmt.Println("No data for day")
-		return
+		return errors.New("No data for given day")
 	}
 	c, err := p.ParseJson(b)
 	if err != nil {
@@ -28,7 +28,8 @@ func GenerateReport(
 	r := formatter.CreateReport(c, s)
 	ctx := context.Background()
 	yesterday := since.Format("2006-01-02")
-	body := yesterday + " for repo: " + repo
+	qb := formatter.NewQueueBody(yesterday, repo)
 	cr.Set(ctx, r, yesterday)
-	rabbitMQ.Publish(body, ctx)
+	rabbitMQ.Publish(qb, ctx)
+	return nil
 }

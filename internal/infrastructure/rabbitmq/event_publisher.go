@@ -2,7 +2,10 @@ package rabbitmq
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+
+	"NewJhez01/github-tracker/internal/domain/formatter"
 
 	"github.com/rabbitmq/amqp091-go"
 )
@@ -25,16 +28,17 @@ func NewPublisher(conn *amqp091.Connection) *WorkQueue {
 	}
 }
 
-func (r *WorkQueue) Publish(s string, ctx context.Context) {
+func (r *WorkQueue) Publish(qb *formatter.QueueBody, ctx context.Context) {
 	fmt.Println("sent message")
-	err := r.ch.PublishWithContext(ctx,
+	body, err := json.Marshal(qb)
+	err = r.ch.PublishWithContext(ctx,
 		"",           // exchange
 		r.queue.Name, // routing key
 		false,        // mandatory
 		false,        // immediate
 		amqp091.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(s),
+			ContentType: "application/json",
+			Body:        body,
 		})
 	if err != nil {
 		fmt.Println("failed to pub queue")

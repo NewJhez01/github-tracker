@@ -14,7 +14,7 @@ type JsonParser interface {
 }
 
 type RabbitMq interface {
-	Publish(body string, ctx context.Context)
+	Publish(body *formatter.QueueBody, ctx context.Context)
 	Consume() <-chan amqp091.Delivery
 }
 
