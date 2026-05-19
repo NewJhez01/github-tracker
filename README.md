@@ -1,153 +1,80 @@
-# GitHub Tracker
+# github-tracker
 
-Fetches public activity across configured repositories and delivers a weekly email digest.
+Polls configured GitHub repositories for daily commit activity, caches reports, and delivers them via email through an async message queue.
 
-## What it does
+Built to explore Go backend patterns: CQRS, hexagonal architecture, dependency injection via interfaces, and async pipelines.
 
-- Polls repository commits via GitHub API
-- Generates a summary report
-- Queues and sends it asynchronously via SMTP
+## Stack
 
-## Concepts
+Go · Redis · RabbitMQ · SMTP
 
-- Concurrent HTTP workers
-- File streaming (repo list from TOML)
-- Redis caching
-- Message queue + async consumers
-- Cron scheduling
+## How it works
 
-## Setup
-
-to start:
-
-```
-docker run -d --rm --name redis -p 6379:6379 redis
-docker run -d --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
-go run ./cmd/main.go
-```
-
-```bash
-git clone git@github.com:NewJhez01/github-tracker.git
-./setup.sh  # writes repo list to config.toml
-```
+GitHub API → HTTP handler → GenerateReport command ↓ Redis cache ↓ RabbitMQ (publish) ↓ Message consumer handler ↓ SendReport command ↓ SMTP email
 
 ## Architecture
 
-This project follows CQRS (Command Query Responsibility Segregation) with a hexagonal architecture mindset: domain logic sits at the center, handlers orchestrate, and infrastructure concerns (file I/O, HTTP, cache, queue, SMTP) are pushed to the edges.
+Hexagonal layout with CQRS in the domain layer. Infrastructure concerns (HTTP, Redis, RabbitMQ, SMTP, file parsing) implement domain interfaces and are injected at startup in cmd/main.go.
+
+cmd/main.go # wires dependencies, starts handlers
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        Entry Point                          │
-│                    cmd/tracker/main.go                      │
-│              (wires dependencies, starts cron)              │
-└─────────────────────────────┬───────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         Handlers                            │
-│  ┌─────────────────┐  ┌─────────────────────────────────┐   │
-│  │  FetchHandler   │  │      MessageConsumerHandler     │   │
-│  │                 │  │                                 │   │
-│  │  Load repos     │  │  Read from queue                │   │
-│  │  Fetch commits  │  │  Format report                  │   │
-│  │  Generate report│  │  Send via SMTP                  │   │
-│  │  Cache + Queue  │  │                                 │   │
-│  └─────────────────┘  └─────────────────────────────────┘   │
-│                                                             │
-└─────────────────────────────┬───────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                          Domain                             │
-│                                                             │
-│   ┌──────────────┐        ┌──────────────────────────────┐  │
-│   │    Query     │        │           Command            │  │
-│   │              │        │                              │  │
-│   │ GetRepos()   │        │  GenerateReport(repos)       │  │
-│   │              │        │    → build commit summary    │  │
-│   └──────────────┘        │    → return Report           │  │
-│                           │                              │  │
-│                           │  CacheReport(report)         │  │
-│                           │  EnqueueReport(report)       │  │
-│                           │                              │  │
-│                           │  SendReport(report)          │  │
-│                           │    → format email body       │  │
-│                           │    → dispatch via SMTP       │  │
-│                           └──────────────────────────────┘  │
-│                                                             │
-│   ┌─────────────────────────────────────────────────────┐   │
-│   │              internal/domain/model/                 │   │
-│   │   Repo, Commit, Report, ReportCreatedEvent          │   │
-│   └─────────────────────────────────────────────────────┘   │
-└─────────────────────────────┬───────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      Infrastructure                         │
-│                                                             │
-│  ┌────────────┐  ┌────────────┐  ┌──────────┐  ┌────────┐   │
-│  │   File     │  │   GitHub   │  │  Redis   │  │ Queue  │   │
-│  │  Reader    │  │   Client   │  │  Cache   │  │        │   │
-│  │            │  │            │  │          │  │        │   │
-│  │ TOML parse │  │ Commits API│  │ Store    │  │ Enqueue│   │
-│  │            │  │ Rate limit │  │ Retrieve │  │ Dequeue│   │
-│  └────────────┘  └────────────┘  └──────────┘  └────────┘   │
-│                                                             │
-│  ┌────────────┐  ┌──────────────────────────────────────┐   │
-│  │   SMTP     │  │           internal/services/         │   │
-│  │  Sender    │  │  (parsers, formatters, utilities —   │   │
-│  │            │  │   pure functions, no I/O)            │   │
-│  │ Send email │  │                                      │   │
-│  └────────────┘  └──────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+Internal/
+    domain/
+        interfaces.go -> JsonParser, RabbitMq, CacheRepo, Smtp, FileParser
+        command/
+            GenerateReport,
+            SendReport,
+        query/
+            FetchAllReposFromConfFile
+        formatter/
+            Domain Logic Formatting Utils
+
+    handler/
+        http/
+            FetchGithubData polls API, triggers report generation
+        message/
+            Send consumes queue, triggers email dispatch
+
+    infrastructure/
+        parser/
+            JSON + file parsers
+        rabbitmq/
+            WorkQueue (Publish + Consume)
+        email/
+            SmtpClient
+
+    repo/
+        cache.go # Redis-backed CacheRepo
+
+conf/ repos.toml # list of repositories to track
 ```
 
-## Package Layout Target
+## Setup
+
+```bash
+git clone git@github.com:NewJhez01/github-tracker.git
+cd github-tracker
+cp .env.example .env          # fill in SMTP and connection details
+
+docker run -d --rm --name redis -p 6379:6379 redis
+docker run -d --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+go run ./cmd/main.go
+
+Environment
+
+RABBIT_URL=amqp://guest:guest@localhost:5672/
+REDIS_URL=localhost:6379
+SMTP_FROM=
+SMTP_HOST=
+SMTP_PASSWORD=
+SMTP_ADDR=
+
+Remaining work
+
+See open issues. Tests and cron scheduling are the main outstanding items.
+```
 
 ```
-github-tracker/
-├── cmd/
-│   └── tracker/
-│       └── main.go                 # entry point, wires deps
-│
-├── internal/
-│   ├── handler/
-│   │   ├── fetch.go                # FetchHandler
-│   │   └── message_consumer.go     # MessageConsumerHandler
-│   │
-│   ├── domain/
-│   │   ├── model/
-│   │   │   ├── repo.go
-│   │   │   ├── commit.go
-│   │   │   └── report.go
-│   │   │
-│   │   ├── query/
-│   │   │   └── repos.go            # GetRepos(repoReader) []Repo
-│   │   │
-│   │   └── command/
-│   │       ├── generate_report.go
-│   │       ├── cache_report.go
-│   │       └── send_report.go
-│   │
-│   ├── infrastructure/
-│   │   ├── file/
-│   │   │   └── reader.go           # os.Open, TOML parse
-│   │   ├── github/
-│   │   │   └── client.go           # http.Client, API calls
-│   │   ├── cache/
-│   │   │   └── redis.go            # Redis client wrapper
-│   │   ├── queue/
-│   │   │   └── queue.go            # enqueue/dequeue
-│   │   └── smtp/
-│   │       └── sender.go           # email dispatch
-│   │
-│   └── services/
-│       ├── parse_repos.go          # string splitting (pure)
-│       ├── parse_commits.go        # JSON → domain model (pure)
-│       └── format_email.go         # Report → HTML/text (pure)
-│
-├── conf/
-│   └── repos.toml
-│
-└── setup.sh
+
 ```
