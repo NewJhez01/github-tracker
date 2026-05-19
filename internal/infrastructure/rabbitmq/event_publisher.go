@@ -8,8 +8,8 @@ import (
 )
 
 type WorkQueue struct {
-	Ch    *amqp091.Channel
-	Queue *amqp091.Queue
+	ch    *amqp091.Channel
+	queue *amqp091.Queue
 }
 
 func NewPublisher(conn *amqp091.Connection) *WorkQueue {
@@ -20,16 +20,16 @@ func NewPublisher(conn *amqp091.Connection) *WorkQueue {
 
 	q := createQueue(ch)
 	return &WorkQueue{
-		Ch:    ch,
-		Queue: &q,
+		ch:    ch,
+		queue: &q,
 	}
 }
 
 func (r *WorkQueue) Publish(s string, ctx context.Context) {
 	fmt.Println("sent message")
-	err := r.Ch.PublishWithContext(ctx,
+	err := r.ch.PublishWithContext(ctx,
 		"",           // exchange
-		r.Queue.Name, // routing key
+		r.queue.Name, // routing key
 		false,        // mandatory
 		false,        // immediate
 		amqp091.Publishing{
@@ -42,8 +42,8 @@ func (r *WorkQueue) Publish(s string, ctx context.Context) {
 }
 
 func (r *WorkQueue) Consume() <-chan amqp091.Delivery {
-	msg, err := r.Ch.Consume(
-		r.Queue.Name,
+	msg, err := r.ch.Consume(
+		r.queue.Name,
 		"",
 		true,  // auto-ack
 		false, // exclusive
