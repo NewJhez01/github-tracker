@@ -52,7 +52,7 @@ func main() {
 	http.FetchGithubData(githubParser, rabbitmq, fParser, cr)
 
 	// open endless connection for message handler
-	if len(os.Args) > 1 && os.Args[1] == "consumer" {
+	if len(os.Args) > 1 && os.Args[1] == "consume" {
 		go message.Send(rabbitmq, cr, smtp)
 		select {}
 	}
