@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"NewJhez01/github-tracker/internal/domain/formatter"
+
+	"github.com/rabbitmq/amqp091-go"
 )
 
 type JsonParser interface {
@@ -13,6 +15,7 @@ type JsonParser interface {
 
 type RabbitMq interface {
 	Publish(body string, ctx context.Context)
+	Consume() <-chan amqp091.Delivery
 }
 
 type FileParser interface {

@@ -7,25 +7,25 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 )
 
-type EventPublisher struct {
+type WorkQueue struct {
 	Ch    *amqp091.Channel
 	Queue *amqp091.Queue
 }
 
-func NewPublisher(conn *amqp091.Connection) *EventPublisher {
+func NewPublisher(conn *amqp091.Connection) *WorkQueue {
 	ch, err := conn.Channel()
 	if err != nil {
 		fmt.Println("failed to connect")
 	}
 
 	q := createQueue(ch)
-	return &EventPublisher{
+	return &WorkQueue{
 		Ch:    ch,
 		Queue: &q,
 	}
 }
 
-func (r EventPublisher) Publish(s string, ctx context.Context) {
+func (r *WorkQueue) Publish(s string, ctx context.Context) {
 	fmt.Println("sent message")
 	err := r.Ch.PublishWithContext(ctx,
 		"",           // exchange
@@ -39,4 +39,23 @@ func (r EventPublisher) Publish(s string, ctx context.Context) {
 	if err != nil {
 		fmt.Println("failed to pub queue")
 	}
+}
+
+func (r *WorkQueue) Consume() <-chan amqp091.Delivery {
+	msg, err := r.Ch.Consume(
+		r.Queue.Name,
+		"",
+		true,  // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		amqp091.Table{
+			amqp091.QueueTypeArg: amqp091.QueueTypeQuorum,
+		},
+	)
+	if err != nil {
+		fmt.Println("fail to recieve message")
+	}
+
+	return msg
 }

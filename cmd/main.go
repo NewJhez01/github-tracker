@@ -52,6 +52,6 @@ func main() {
 	http.FetchGithubData(githubParser, rabbitmq, fParser, cr)
 
 	// open endless connection for message handler
-	go message.Send(*rabbitmq, cr, smtp)
+	go message.Send(rabbitmq, cr, smtp)
 	select {}
 }
