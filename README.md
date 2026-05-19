@@ -68,10 +68,14 @@ git clone git@github.com:NewJhez01/github-tracker.git
 cd github-tracker
 cp .env.example .env          # fill in SMTP and connection details
 
+```
+
 edit the repos you want to track into repo.toml
 
-docker compose up -d  # consumer starts up here
+```
+docker compose up -d # consumer starts up here
 docker compose run --rm app /docker-tracker # publisher must be custom called by user or systemD
+
 ```
 
 Remaining work
