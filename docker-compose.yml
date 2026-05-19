@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    command: /docker-tracker consume
+    depends_on:
+      - redis
+      - rabbitmq
+    environment:
+      - REDIS_URL=redis:6379
+      - RABBIT_URL=amqp://guest:guest@rabbitmq:5672
+      - SMTP_FROM=${SMTP_FROM}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_ADDR=${SMTP_ADDR}
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

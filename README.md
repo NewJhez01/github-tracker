@@ -10,7 +10,16 @@ Go · Redis · RabbitMQ · SMTP
 
 ## How it works
 
-GitHub API → HTTP handler → GenerateReport command ↓ Redis cache ↓ RabbitMQ (publish) ↓ Message consumer handler ↓ SendReport command ↓ SMTP email
+The Consumer always runs while the fetcher is triggered via systemD cron job
+
+```
+GitHub API → HTTP handler → GenerateReport command
+                                            ↓ Redis cache
+                                            ↓ RabbitMQ (publish)
+Async -> Message consumer handler
+                            ↓ SendReport command
+                                            ↓ SMTP email
+```
 
 ## Architecture
 
@@ -19,16 +28,17 @@ Hexagonal layout with CQRS in the domain layer. Infrastructure concerns (HTTP, R
 cmd/main.go # wires dependencies, starts handlers
 
 ```
+
 Internal/
-    domain/
-        interfaces.go -> JsonParser, RabbitMq, CacheRepo, Smtp, FileParser
-        command/
-            GenerateReport,
-            SendReport,
-        query/
-            FetchAllReposFromConfFile
-        formatter/
-            Domain Logic Formatting Utils
+domain/
+interfaces.go -> JsonParser, RabbitMq, CacheRepo, Smtp, FileParser
+command/
+GenerateReport,
+SendReport,
+query/
+FetchAllReposFromConfFile
+formatter/
+Domain Logic Formatting Utils
 
     handler/
         http/
@@ -48,6 +58,7 @@ Internal/
         cache.go # Redis-backed CacheRepo
 
 conf/ repos.toml # list of repositories to track
+
 ```
 
 ## Setup
@@ -57,18 +68,8 @@ git clone git@github.com:NewJhez01/github-tracker.git
 cd github-tracker
 cp .env.example .env          # fill in SMTP and connection details
 
-docker run -d --rm --name redis -p 6379:6379 redis
-docker run -d --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
-go run ./cmd/main.go
-
-Environment
-
-RABBIT_URL=amqp://guest:guest@localhost:5672/
-REDIS_URL=localhost:6379
-SMTP_FROM=
-SMTP_HOST=
-SMTP_PASSWORD=
-SMTP_ADDR=
+docker compose up -d  # consumer starts up here
+docker compose run --rm app /docker-tracker fetch # publisher
 
 Remaining work
 

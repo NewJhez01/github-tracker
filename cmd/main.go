@@ -25,7 +25,7 @@ func main() {
 	// connections
 	rabbitConn, err := amqp091.Dial(os.Getenv("RABBIT_URL"))
 	if err != nil {
-		fmt.Println("connection failed")
+		fmt.Println("connection failed", err)
 	}
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_URL"),
@@ -52,6 +52,8 @@ func main() {
 	http.FetchGithubData(githubParser, rabbitmq, fParser, cr)
 
 	// open endless connection for message handler
-	go message.Send(rabbitmq, cr, smtp)
-	select {}
+	if len(os.Args) > 1 && os.Args[1] == "consumer" {
+		go message.Send(rabbitmq, cr, smtp)
+		select {}
+	}
 }
