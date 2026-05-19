@@ -7,7 +7,13 @@ import (
 	"strings"
 )
 
-func ParseFileByLine(f *os.File) chan string {
+type FileParser struct{}
+
+func NewFileParser() *FileParser {
+	return &FileParser{}
+}
+
+func (FileParser) ParseFileByLine(f *os.File) chan string {
 	ch := make(chan string)
 	b := make([]byte, 8)
 	chunk := ""

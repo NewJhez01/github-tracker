@@ -2,16 +2,13 @@ package command
 
 import (
 	"context"
-	"os"
 
-	"NewJhez01/github-tracker/internal/infrastructure/email"
-	"NewJhez01/github-tracker/internal/repo"
+	"NewJhez01/github-tracker/internal/domain"
 )
 
-func SendReport(b []byte) {
+func SendReport(b []byte, cr domain.CacheRepo, e domain.Smtp) {
 	ctx := context.Background()
 	d := string(b)
-	r := repo.Get(ctx, d)
-	c := email.CreateSmtpClient(os.Getenv("SMTP_FROM"), os.Getenv("SMTP_HOST"), os.Getenv("SMTP_PASSWORD"))
-	c.Send(os.Getenv("SMTP_ADDR"), "Github activities for: "+d, r)
+	r := cr.Get(ctx, d)
+	e.Send("Github activities for: "+d, r)
 }
