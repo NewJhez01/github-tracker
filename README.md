@@ -69,7 +69,7 @@ cd github-tracker
 cp .env.example .env          # fill in SMTP and connection details
 
 docker compose up -d  # consumer starts up here
-docker compose run --rm app /docker-tracker fetch # publisher
+docker compose run --rm app /docker-tracker # publisher must be custom called by user or systemD
 
 Remaining work
 
