@@ -18,6 +18,14 @@ Fetches public activity across configured repositories and delivers a weekly ema
 
 ## Setup
 
+to start:
+
+```
+docker run -d --rm --name redis -p 6379:6379 redis
+docker run -d --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+go run ./cmd/main.go
+```
+
 ```bash
 git clone git@github.com:NewJhez01/github-tracker.git
 ./setup.sh  # writes repo list to config.toml

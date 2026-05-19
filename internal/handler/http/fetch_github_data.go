@@ -6,12 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"NewJhez01/github-tracker/internal/domain"
 	"NewJhez01/github-tracker/internal/domain/command"
 	"NewJhez01/github-tracker/internal/domain/query"
 )
 
-func FetchGithubData() {
-	ch := query.FetchRepos()
+func FetchGithubData(
+	p domain.JsonParser,
+	rabbitMq domain.RabbitMq,
+	fParser domain.FileParser,
+	cr domain.CacheRepo,
+) {
+	ch := query.FetchRepos(fParser)
 	since := time.Now().Add(-48 * time.Hour)
 	c := &http.Client{Timeout: time.Duration(1) * time.Second}
 	for v := range ch {
@@ -34,6 +40,6 @@ func FetchGithubData() {
 		}
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		command.GenerateReport(body, v, since)
+		command.GenerateReport(p, rabbitMq, body, v, since, cr)
 	}
 }
