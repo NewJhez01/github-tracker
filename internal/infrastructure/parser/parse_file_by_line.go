@@ -17,13 +17,11 @@ func (FileParser) ParseFileByLine(f *os.File) chan string {
 	ch := make(chan string)
 	b := make([]byte, 8)
 	chunk := ""
-	i := 0
 	go func() {
 		defer close(ch)
 		for {
 			n, err := f.Read(b)
 			if n != 0 {
-				i++
 				data := append([]byte(chunk), b[:n]...)
 				chunk = lineSplitter(data, ch)
 			}
