@@ -2,7 +2,7 @@ package domain
 
 import (
 	"context"
-	"os"
+	"io"
 
 	"NewJhez01/github-tracker/internal/domain/formatter"
 
@@ -19,7 +19,7 @@ type RabbitMq interface {
 }
 
 type FileParser interface {
-	ParseFileByLine(file *os.File) chan string
+	ParseFileByLine(file io.ReadCloser) chan string
 }
 
 type CacheRepo interface {

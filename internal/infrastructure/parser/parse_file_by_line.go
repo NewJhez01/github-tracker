@@ -1,9 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"io"
-	"os"
+	"log"
 	"strings"
 )
 
@@ -13,7 +12,7 @@ func NewFileParser() *FileParser {
 	return &FileParser{}
 }
 
-func (FileParser) ParseFileByLine(f *os.File) chan string {
+func (FileParser) ParseFileByLine(f io.ReadCloser) chan string {
 	ch := make(chan string)
 	b := make([]byte, 8)
 	chunk := ""
@@ -33,7 +32,7 @@ func (FileParser) ParseFileByLine(f *os.File) chan string {
 				return
 			}
 			if err != nil {
-				fmt.Println(err.Error())
+				log.Println("failed to read file")
 				return
 			}
 		}
