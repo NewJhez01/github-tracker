@@ -25,7 +25,7 @@ func GenerateReport(
 	if err != nil {
 		fmt.Println("parser func failed")
 	}
-	r := formatter.CreateReport(c, s)
+	r := formatter.CreateReport(c)
 	ctx := context.Background()
 	yesterday := since.Format("2006-01-02")
 	qb := formatter.NewQueueBody(yesterday, repo)

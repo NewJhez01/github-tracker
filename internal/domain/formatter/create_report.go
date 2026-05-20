@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func CreateReport(c []Commit, r string) string {
+func CreateReport(c []Commit) string {
 	var b strings.Builder
 
 	for _, v := range c {
