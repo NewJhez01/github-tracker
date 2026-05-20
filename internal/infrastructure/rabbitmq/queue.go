@@ -1,12 +1,12 @@
 package rabbitmq
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/rabbitmq/amqp091-go"
 )
 
-func createQueue(ch *amqp091.Channel) amqp091.Queue {
+func createQueue(ch *amqp091.Channel) (*amqp091.Queue, error) {
 	q, err := ch.QueueDeclare(
 		"send_email", // name
 		true,         // durability
@@ -18,8 +18,8 @@ func createQueue(ch *amqp091.Channel) amqp091.Queue {
 		},
 	)
 	if err != nil {
-		fmt.Println("failed to create queue")
+		return nil, errors.New("failed to connect to rabbitmq: " + err.Error())
 	}
 
-	return q
+	return &q, nil
 }

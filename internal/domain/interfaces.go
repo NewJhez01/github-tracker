@@ -2,7 +2,7 @@ package domain
 
 import (
 	"context"
-	"os"
+	"io"
 
 	"NewJhez01/github-tracker/internal/domain/formatter"
 
@@ -14,19 +14,19 @@ type JsonParser interface {
 }
 
 type RabbitMq interface {
-	Publish(body *formatter.QueueBody, ctx context.Context)
-	Consume() <-chan amqp091.Delivery
+	Publish(body *formatter.QueueBody, ctx context.Context) error
+	Consume() (<-chan amqp091.Delivery, error)
 }
 
 type FileParser interface {
-	ParseFileByLine(file *os.File) chan string
+	ParseFileByLine(file io.ReadCloser) chan string
 }
 
 type CacheRepo interface {
-	Set(ctx context.Context, report, key string)
-	Get(ctx context.Context, key string) string
+	Set(ctx context.Context, report, key string) error
+	Get(ctx context.Context, key string) (string, error)
 }
 
 type Smtp interface {
-	Send(subject, body string)
+	Send(subject, body string) error
 }

@@ -3,7 +3,6 @@ package parser
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"time"
 
 	"NewJhez01/github-tracker/internal/domain/formatter"
@@ -34,8 +33,7 @@ func (GithubParser) ParseJson(b []byte) ([]formatter.Commit, error) {
 	c := []commit{}
 	err := json.Unmarshal(b, &c)
 	if err != nil {
-		fmt.Println("marshall error", err)
-		return nil, errors.New("fail to marshall json")
+		return nil, errors.New("fail to marshall json: " + err.Error())
 	}
 	p := []formatter.Commit{}
 	for _, v := range c {

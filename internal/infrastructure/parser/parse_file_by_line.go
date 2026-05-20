@@ -1,9 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"io"
-	"os"
+	"log"
 	"strings"
 )
 
@@ -13,17 +12,15 @@ func NewFileParser() *FileParser {
 	return &FileParser{}
 }
 
-func (FileParser) ParseFileByLine(f *os.File) chan string {
+func (FileParser) ParseFileByLine(f io.ReadCloser) chan string {
 	ch := make(chan string)
 	b := make([]byte, 8)
 	chunk := ""
-	i := 0
 	go func() {
 		defer close(ch)
 		for {
 			n, err := f.Read(b)
 			if n != 0 {
-				i++
 				data := append([]byte(chunk), b[:n]...)
 				chunk = lineSplitter(data, ch)
 			}
@@ -35,7 +32,7 @@ func (FileParser) ParseFileByLine(f *os.File) chan string {
 				return
 			}
 			if err != nil {
-				fmt.Println(err.Error())
+				log.Println("failed to read file")
 				return
 			}
 		}
