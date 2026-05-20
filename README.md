@@ -25,9 +25,9 @@ Async -> Message consumer handler
 
 Hexagonal layout with CQRS in the domain layer. Infrastructure concerns (HTTP, Redis, RabbitMQ, SMTP, file parsing) implement domain interfaces and are injected at startup in cmd/main.go.
 
-cmd/main.go # wires dependencies, starts handlers
-
 ```
+cmd/
+    main.go # wires dependencies, starts handlers
 
 Internal/
     domain/
@@ -77,7 +77,3 @@ docker compose up -d # consumer starts up here
 docker compose run --rm app /docker-tracker # publisher must be custom called by user or systemD
 
 ```
-
-Remaining work
-
-See open issues. Testing is main outstanding item.
