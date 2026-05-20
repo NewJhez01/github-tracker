@@ -1,5 +1,7 @@
 # github-tracker
 
+[here](https://dev.to/newjhez01/beyond-crud-building-a-github-activity-tracker-to-level-up-backend-engineering-24he) is a full blog post about the project
+
 Polls configured GitHub repositories for daily commit activity, caches reports, and delivers them via email through an async message queue.
 
 Built to explore Go backend patterns: CQRS, hexagonal architecture, dependency injection via interfaces, and async pipelines.
