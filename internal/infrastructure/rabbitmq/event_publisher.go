@@ -3,7 +3,8 @@ package rabbitmq
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
+	"log"
 
 	"NewJhez01/github-tracker/internal/domain/formatter"
 
@@ -15,21 +16,23 @@ type WorkQueue struct {
 	queue *amqp091.Queue
 }
 
-func NewPublisher(conn *amqp091.Connection) *WorkQueue {
+func NewPublisher(conn *amqp091.Connection) (*WorkQueue, error) {
 	ch, err := conn.Channel()
 	if err != nil {
-		fmt.Println("failed to connect")
+		return nil, errors.New("failed to connect to rabbitmq" + err.Error())
 	}
 
-	q := createQueue(ch)
+	q, err := createQueue(ch)
+	if err != nil {
+		return nil, errors.New("failed to create work queue prev: " + err.Error())
+	}
 	return &WorkQueue{
 		ch:    ch,
-		queue: &q,
-	}
+		queue: q,
+	}, nil
 }
 
-func (r *WorkQueue) Publish(qb *formatter.QueueBody, ctx context.Context) {
-	fmt.Println("sent message")
+func (r *WorkQueue) Publish(qb *formatter.QueueBody, ctx context.Context) error {
 	body, err := json.Marshal(qb)
 	err = r.ch.PublishWithContext(ctx,
 		"",           // exchange
@@ -41,12 +44,13 @@ func (r *WorkQueue) Publish(qb *formatter.QueueBody, ctx context.Context) {
 			Body:        body,
 		})
 	if err != nil {
-		fmt.Println("failed to pub queue")
+		return errors.New("failed to send message" + err.Error())
 	}
+	log.Println("sent message")
+	return nil
 }
 
-func (r *WorkQueue) Consume() <-chan amqp091.Delivery {
-	fmt.Println("received message")
+func (r *WorkQueue) Consume() (<-chan amqp091.Delivery, error) {
 	msg, err := r.ch.Consume(
 		r.queue.Name,
 		"",
@@ -59,8 +63,9 @@ func (r *WorkQueue) Consume() <-chan amqp091.Delivery {
 		},
 	)
 	if err != nil {
-		fmt.Println("fail to recieve message")
+		return nil, errors.New("failed to consume message prev: " + err.Error())
 	}
 
-	return msg
+	log.Println("received message")
+	return msg, nil
 }

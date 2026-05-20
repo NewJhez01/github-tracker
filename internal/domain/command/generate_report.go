@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"NewJhez01/github-tracker/internal/domain"
@@ -23,7 +22,7 @@ func GenerateReport(
 	}
 	c, err := p.ParseJson(b)
 	if err != nil {
-		fmt.Println("parser func failed")
+		return errors.New("failed to parse json prev: " + err.Error())
 	}
 	r := formatter.CreateReport(c)
 	ctx := context.Background()

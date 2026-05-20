@@ -1,7 +1,8 @@
 package email
 
 import (
-	"fmt"
+	"errors"
+	"log"
 	"net/smtp"
 )
 
@@ -19,13 +20,16 @@ func NewSmtpClient(addr, host, passwd, smtpAddr string) *SmtpClient {
 	}
 }
 
-func (c *SmtpClient) Send(headline, body string) {
+func (c *SmtpClient) Send(headline, body string) error {
 	msg := "From: " + c.addr + "\n" +
 		"To: " + c.addr + "\n" +
 		"Subject: " + headline + "\n\n" +
 		body
 	err := smtp.SendMail(c.smtpAddr, c.auth, c.addr, []string{c.addr}, []byte(msg))
 	if err != nil {
-		fmt.Println("failed to send mail", err)
+		return errors.New("failed to send email: " + err.Error())
 	}
+
+	log.Println("sent email")
+	return nil
 }

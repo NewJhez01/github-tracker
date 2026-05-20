@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -17,32 +18,36 @@ func FetchGithubData(
 	fParser domain.FileParser,
 	cr domain.CacheRepo,
 ) {
-	ch := query.FetchRepos(fParser)
+	ch, err := query.FetchRepos(fParser)
+	if err != nil {
+		log.Fatalf("failed to fetch repos prev: %s", err.Error())
+	}
 	since := time.Now().Add(-48 * time.Hour)
 	c := &http.Client{Timeout: time.Duration(1) * time.Second}
 	for v := range ch {
 		req, err := http.NewRequest("GET", fmt.Sprintf("https://api.github.com/repos/%s/commits?since=%s", v, since.Format("2006-01-02")), nil)
 		if err != nil {
-			fmt.Println("fail")
+			log.Printf("request for %s failed with error :%s continuing", v, err.Error())
+			continue
 		}
 		req.Header.Set("Accept", "application/vnd.github+json")
 		req.Header.Set("X-GitHub-Api-Version", "2026-03-10")
 
 		resp, err := c.Do(req)
 		if err != nil {
-			fmt.Println("failed to get response")
+			log.Printf("response failure %s continuing", err.Error())
 			continue
 		}
 
 		if resp.StatusCode != 200 {
-			fmt.Println("statuscode: ", resp.StatusCode)
+			log.Printf("unexpected status code %v for request: %s continuing", resp.StatusCode, resp.Body)
 			continue
 		}
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
 		err = command.GenerateReport(p, rabbitMq, body, v, since, cr, v)
 		if err != nil {
-			continue
+			log.Printf("failed to generate report prev: %s", err.Error())
 		}
 	}
 }
