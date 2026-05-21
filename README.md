@@ -27,6 +27,8 @@ Async -> Message consumer handler
 
 Hexagonal layout with CQRS in the domain layer. Infrastructure concerns (HTTP, Redis, RabbitMQ, SMTP, file parsing) implement domain interfaces and are injected at startup in cmd/main.go.
 
+Pipeline test
+
 ```
 cmd/
     main.go # wires dependencies, starts handlers
