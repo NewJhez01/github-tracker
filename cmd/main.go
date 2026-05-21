@@ -25,7 +25,7 @@ func main() {
 	// connections
 	rabbitConn, err := amqp091.Dial(os.Getenv("RABBIT_URL"))
 	if err != nil {
-		log.Fatalf("connection failed", err.Error())
+		log.Fatalf("connection failed: %s", err.Error())
 	}
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_URL"),
