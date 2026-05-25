@@ -51,10 +51,8 @@ func main() {
 		os.Getenv("SMTP_ADDR"),
 	)
 
-	// currently for testing purposes until the cron job is active
 	http.FetchGithubData(githubParser, rabbitmq, fParser, &cr)
 
-	// open endless connection for message handler
 	if len(os.Args) > 1 && os.Args[1] == "consume" {
 		go message.Send(rabbitmq, &cr, smtp)
 		select {}
