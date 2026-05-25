@@ -43,8 +43,12 @@ func FetchGithubData(
 			log.Printf("unexpected status code %v for request: %s continuing", resp.StatusCode, resp.Body)
 			continue
 		}
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		resp.Body.Close()
+		if err != nil {
+			log.Printf("failed to read body prev: %s", err.Error())
+			continue
+		}
 		err = command.GenerateReport(p, rabbitMq, body, v, since, cr, v)
 		if err != nil {
 			log.Printf("failed to generate report prev: %s", err.Error())
