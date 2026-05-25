@@ -15,9 +15,10 @@ Go · Redis · RabbitMQ · SMTP
 The Consumer always runs while the fetcher is triggered via systemD cron job
 
 ```
-GitHub API → HTTP handler → GenerateReport command
-                                            ↓ Redis cache
-                                            ↓ RabbitMQ (publish)
+GitHub API → HTTP handler
+                    ↓ GenerateReport command
+                                        ↓ Redis cache 
+                                        ↓ RabbitMQ (publish)
 Async -> Message consumer handler
                             ↓ SendReport command
                                             ↓ SMTP email
