@@ -34,6 +34,9 @@ func NewPublisher(conn *amqp091.Connection) (*WorkQueue, error) {
 
 func (r *WorkQueue) Publish(qb *formatter.QueueBody, ctx context.Context) error {
 	body, err := json.Marshal(qb)
+	if err != nil {
+		return errors.New("failed to parse json prev: " + err.Error())
+	}
 	err = r.ch.PublishWithContext(ctx,
 		"",           // exchange
 		r.queue.Name, // routing key
@@ -44,7 +47,7 @@ func (r *WorkQueue) Publish(qb *formatter.QueueBody, ctx context.Context) error 
 			Body:        body,
 		})
 	if err != nil {
-		return errors.New("failed to send message" + err.Error())
+		return errors.New("failed to send message prev: " + err.Error())
 	}
 	log.Println("sent message")
 	return nil
