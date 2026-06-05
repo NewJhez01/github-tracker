@@ -1,19 +1,21 @@
-package formatter
+package test
 
 import (
 	"strings"
 	"testing"
 	"time"
+
+	"NewJhez01/github-tracker/internal/domain/formatter"
 )
 
 func TestCreateReport(t *testing.T) {
 	fixedTime := time.Date(2026, 5, 20, 19, 20, 0, 0, time.Local)
-	commits := []Commit{
+	commits := []formatter.Commit{
 		{Message: "hello world", Name: "foo", Email: "foo@bar.com", Date: fixedTime},
 		{Message: "goodbye world", Name: "bar", Email: "bar@foo.com", Date: fixedTime},
 	}
 
-	result := CreateReport(commits)
+	result := formatter.CreateReport(commits)
 
 	if !strings.Contains(result, "author:   foo") {
 		t.Fatalf("missing author foo")
