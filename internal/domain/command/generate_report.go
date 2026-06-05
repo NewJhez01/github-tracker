@@ -12,7 +12,7 @@ import (
 func GenerateReport(
 	p domain.JsonParser,
 	rabbitMQ domain.RabbitMq,
-	b []byte, s string,
+	b []byte,
 	since time.Time,
 	cr domain.CacheRepo,
 	repo string,

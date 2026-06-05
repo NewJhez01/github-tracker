@@ -49,7 +49,7 @@ func FetchGithubData(
 			log.Printf("failed to read body prev: %s", err.Error())
 			continue
 		}
-		err = command.GenerateReport(p, rabbitMq, body, v, since, cr, v)
+		err = command.GenerateReport(p, rabbitMq, body, since, cr, v)
 		if err != nil {
 			log.Printf("failed to generate report prev: %s", err.Error())
 		}
