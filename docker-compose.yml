@@ -2,6 +2,8 @@ services:
   app:
     build: .
     command: /docker-tracker consume
+    ports:
+      - "8080:8080"
     depends_on:
       - redis
       - rabbitmq
