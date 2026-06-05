@@ -1,4 +1,4 @@
-package parser
+package test
 
 import (
 	"errors"
@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"NewJhez01/github-tracker/internal/infrastructure/parser"
 )
 
 func TestParseFileByLine(t *testing.T) {
@@ -17,7 +19,7 @@ func TestParseFileByLine(t *testing.T) {
 	if err != nil {
 		log.Fatalf("failed to create temp file for test")
 	}
-	fp := NewFileParser()
+	fp := parser.NewFileParser()
 	result := fp.ParseFileByLine(f)
 	i := 0
 	for v := range result {
@@ -39,7 +41,7 @@ func (readerCloserError) Close() error {
 }
 
 func TestParseFileByLineError(t *testing.T) {
-	fp := NewFileParser()
+	fp := parser.NewFileParser()
 	result := fp.ParseFileByLine(readerCloserError{})
 	i := 0
 	for range result {

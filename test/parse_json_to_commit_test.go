@@ -1,9 +1,11 @@
-package parser
+package test
 
 import (
 	"fmt"
 	"testing"
 	"time"
+
+	"NewJhez01/github-tracker/internal/infrastructure/parser"
 )
 
 func TestParseJson(t *testing.T) {
@@ -27,7 +29,7 @@ func TestParseJson(t *testing.T) {
 
 	testData := fmt.Sprintf("[%s, %s]", set1, set2)
 
-	gp := NewGithubParser()
+	gp := parser.NewGithubParser()
 	commits, err := gp.ParseJson([]byte(testData))
 	if err != nil {
 		t.Fatalf("function produced an unexpected error")
@@ -49,7 +51,7 @@ func TestParseJson(t *testing.T) {
 
 func TestParseJsonError(t *testing.T) {
 	falseJson := "{hello world}"
-	gp := NewGithubParser()
+	gp := parser.NewGithubParser()
 	_, err := gp.ParseJson([]byte(falseJson))
 	if err == nil {
 		t.Fatalf("expected an err")
