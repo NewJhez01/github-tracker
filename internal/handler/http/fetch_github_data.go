@@ -51,7 +51,7 @@ func FetchGithubData(
 		}
 		err = command.GenerateReport(p, rabbitMq, body, since, cr, v)
 		if err != nil {
-			log.Printf("failed to generate report prev: %s", err.Error())
+			log.Printf("failed to generate report prev: %s continuing with next request", err.Error())
 		}
 	}
 }
